@@ -8,7 +8,7 @@ before_build:
   - ps: Vsix-TokenReplacement src\CloudNimble.BindingRedirectDoctor\source.extension.cs 'Version = "([0-9\\.]+)"' 'Version = "0.1.0"'
 
 build_script:
-  - nuget restore -Verbosity quiet
+  - nuget restore src\CloudNimble.BindingRedirectDoctor.sln -Verbosity quiet
   - msbuild src\CloudNimble.BindingRedirectDoctor.sln /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
 
 after_test:
