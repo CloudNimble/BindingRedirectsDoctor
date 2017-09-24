@@ -69,9 +69,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\LICENSE">
+    <Content Include="..\..\LICENSE">
       <Link>Resources\LICENSE</Link>
-    </None>
+    </Content>
     <None Include="Key.snk" />
     <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
