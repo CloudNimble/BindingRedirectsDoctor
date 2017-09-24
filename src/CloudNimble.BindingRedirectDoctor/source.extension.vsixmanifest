@@ -4,7 +4,7 @@
     <Identity Id="3d111d8d-7d15-4c6e-8ca3-494426e539ff" Version="0.1.0" Language="en-US" Publisher="Robert McLaws" />
     <DisplayName>Binding Redirects Doctor</DisplayName>
     <Description xml:space="preserve">Cleans and sorts the Assembly Binding Redirects in your projects to make them more manageable.</Description>
-    <License>Resources/LICENSE</License>
+    <License>Resources\LICENSE</License>
     <Icon>Resources\Icon.png</Icon>
     <PreviewImage>Resources\Preview.png</PreviewImage>
     <Tags>web.config, assembly binding redirects, binding redirects, assembly binding</Tags>
