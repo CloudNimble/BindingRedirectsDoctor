@@ -85,8 +85,6 @@ namespace CloudNimble.BindingRedirectDoctor
         {
             var cmdId = new CommandID(PackageGuids.guidFixRedirectsCommandPackageCmdSet, commandId);
             var menuCmd = new OleMenuCommand(invokeHandler, cmdId);
-            //menuCmd.Visible = menuCmd.Enabled = false;
-            menuCmd.Visible = false;
             menuCmd.BeforeQueryStatus += beforeQueryStatus;
             _commandService.AddCommand(menuCmd);
         }
@@ -98,10 +96,9 @@ namespace CloudNimble.BindingRedirectDoctor
         private void CheckFixCommandVisibility(object sender, EventArgs e)
         {
             OleMenuCommand button = (OleMenuCommand)sender;
-            button.Visible = false;
+            button.Visible = button.Enabled = false;
 
             if (_dte.SelectedItems.Count != 1)
-
                 return;
 
             var paths = ProjectHelpers.GetSelectedItemPaths();

@@ -5,8 +5,8 @@
     <DisplayName>Binding Redirects Doctor</DisplayName>
     <Description xml:space="preserve">Cleans and sorts the Assembly Binding Redirects in your projects to make them more manageable.</Description>
     <License>Resources/LICENSE</License>
-    <Icon>Icon.png</Icon>
-    <PreviewImage>Preview.png</PreviewImage>
+    <Icon>Resources\Icon.png</Icon>
+    <PreviewImage>Resources\Preview.png</PreviewImage>
     <Tags>web.config, assembly binding redirects, binding redirects, assembly binding</Tags>
   </Metadata>
   <Installation>
@@ -16,6 +16,9 @@
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
     <Dependency Id="Microsoft.VisualStudio.MPF.14.0" DisplayName="Visual Studio MPF 14.0" d:Source="Installed" Version="[14.0]" />
   </Dependencies>
+  <Prerequisites>
+    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,16.0)" DisplayName="Visual Studio core editor" />
+  </Prerequisites>
   <Assets>
     <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
   </Assets>

@@ -37,7 +37,7 @@
          must be a menu. -->
     <Groups>
       <Group guid="guidFixRedirectsCommandPackageCmdSet" id="MyMenuGroup" priority="0x0300">
-        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE" />
       </Group>
     </Groups>
 
@@ -55,6 +55,7 @@
       <Button guid="guidFixRedirectsCommandPackageCmdSet" id="FixRedirectsCommandId" priority="0x0100" type="Button">
         <Parent guid="guidFixRedirectsCommandPackageCmdSet" id="MyMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Repair BindingRedirects</ButtonText>
         </Strings>

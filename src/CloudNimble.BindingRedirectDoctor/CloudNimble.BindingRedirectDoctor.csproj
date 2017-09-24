@@ -210,6 +210,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="source.extension.ico">
+      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
+    </Content>
     <EmbeddedResource Include="Resources\FixRedirectsCommandPackage.png" />
     <Content Include="Resources\Icon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
