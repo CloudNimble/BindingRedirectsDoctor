@@ -22,6 +22,8 @@ See the [change log](CHANGELOG.md) for changes and road map.
 - Automatically uses the latest version of an assembly for any duplicate redirects.
 - Sorts the redirects for easy manageability (especially when using source control).
 
+![Context Menu](art/context-menu.png)
+
 ## Contribute
 Check out the [contribution guidelines](CONTRIBUTING.md)
 if you want to contribute to this project.
