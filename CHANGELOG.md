@@ -12,14 +12,11 @@ download in the
 These are the changes to each version that has been released
 on the official Visual Studio extension gallery.
 
-## 1.1
-
-- [x] Feature 3
-- [x] Feature 4
-
 ## 1.0
 
 - [x] Initial release
-- [x] Feature 1
-- [x] Feature 2
-  - [x] Sub feature
+- [x] Works in Visual Studio 2015 AND Visual Studio 2017
+- [x] Reads your web.config or app.config and cleans up your BindingRedirects.
+  - [x] Sorts the list for easy manageability.
+  - [x] Removes duplicates, using the latest version for each duplicate redirect found.
+  - [x] Makes a backup of your original file (just in case).
