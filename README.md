@@ -4,7 +4,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/d1wl3gdb8hn8ngc3?svg=true)](https://ci.appveyor.com/project/robertmclaws/bindingredirectsdoctor)
 
 <!-- Update the VS Gallery link after you upload the VSIX-->
-Download this extension from the [VS Gallery](https://visualstudiogallery.msdn.microsoft.com/[GuidFromGallery])
+Download this extension from the [VS Marketplace](https://marketplace.visualstudio.com/items?itemName=CloudNimble.BindingRedirectsDoctor)
 or get the [CI build](http://vsixgallery.com/extension/3d111d8d-7d15-4c6e-8ca3-494426e539ff/).
 
 ---------------------------------------

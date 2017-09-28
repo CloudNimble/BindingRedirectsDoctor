@@ -15,7 +15,7 @@ on the official Visual Studio extension gallery.
 ## 1.0
 
 - [x] Initial release
-- [x] Works in Visual Studio 2015 AND Visual Studio 2017
+- [x] Works in Visual Studio 2015 AND Visual Studio 2017.
 - [x] Reads your web.config or app.config and cleans up your BindingRedirects.
   - [x] Sorts the list for easy manageability.
   - [x] Removes duplicates, using the latest version for each duplicate redirect found.
