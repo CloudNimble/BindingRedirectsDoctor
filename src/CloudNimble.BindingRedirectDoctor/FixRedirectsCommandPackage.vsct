@@ -55,6 +55,7 @@
       <Button guid="guidFixRedirectsCommandPackageCmdSet" id="FixRedirectsCommandId" priority="0x0100" type="Button">
         <Parent guid="guidFixRedirectsCommandPackageCmdSet" id="MyMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Repair BindingRedirects</ButtonText>
