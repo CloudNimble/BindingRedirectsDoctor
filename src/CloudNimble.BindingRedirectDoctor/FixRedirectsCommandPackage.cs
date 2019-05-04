@@ -6,6 +6,7 @@
 
 using EnvDTE;
 using EnvDTE80;
+using Microsoft;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System;
@@ -66,12 +67,15 @@ namespace CloudNimble.BindingRedirectDoctor
         /// </summary>
         protected override void Initialize()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             _dte = GetService(typeof(DTE)) as DTE2;
+            Assumes.Present(_dte);
             Instance = this;
 
             Logger.Initialize(this, "BindingRedirects Doctor");
 
             _commandService = (OleMenuCommandService)GetService(typeof(IMenuCommandService));
+            Assumes.Present(_commandService);
             AddCommand(0x0100, (s, e) => { System.Threading.Tasks.Task.Run(() => FixBindingRedirects()); }, CheckFixCommandVisibility);
         }
 
@@ -97,6 +101,7 @@ namespace CloudNimble.BindingRedirectDoctor
         /// <param name="sender"></param>
         private void CheckFixCommandVisibility(object sender, EventArgs e)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             OleMenuCommand button = (OleMenuCommand)sender;
             button.Visible = button.Enabled = false;
 
@@ -120,7 +125,7 @@ namespace CloudNimble.BindingRedirectDoctor
         /// </summary>
         private void FixBindingRedirects()
         {
-
+            ThreadHelper.ThrowIfNotOnUIThread();
             _isProcessing = true;
 
             var files = ProjectHelpers.GetSelectedItemPaths().Where(c => c.ToLower().EndsWith("web.config") || c.ToLower().EndsWith("app.config"));
@@ -147,6 +152,7 @@ namespace CloudNimble.BindingRedirectDoctor
 
                 Parallel.For(0, count, options, i =>
                 {
+                    Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
                     var assemblyBindings = new XElement(assemblyBindingNs + "assemblyBinding");
                     var newBindings = new SortedDictionary<string, XElement>();
                     var fullPath = files.ElementAt(i);
