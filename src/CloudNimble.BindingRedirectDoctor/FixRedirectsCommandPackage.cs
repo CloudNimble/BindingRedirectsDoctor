@@ -16,8 +16,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Task = System.Threading.Tasks.Task;
 
 namespace CloudNimble.BindingRedirectDoctor
 {
@@ -38,13 +40,13 @@ namespace CloudNimble.BindingRedirectDoctor
     /// To get loaded into VS, the package must be referred by &lt;Asset Type="Microsoft.VisualStudio.VsPackage" ...&gt; in .vsixmanifest file.
     /// </para>
     /// </remarks>
-    [PackageRegistration(UseManagedResourcesOnly = true)]
+    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
+    //[ProvideAutoLoad(UIContextGuids80.SolutionExists)]
     [Guid(PackageGuids.guidFixRedirectsCommandPackageString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
-    public sealed class FixRedirectsCommandPackage : Package
+    public sealed class FixRedirectsCommandPackage : AsyncPackage
     {
 
         public DTE2 _dte;
@@ -65,18 +67,18 @@ namespace CloudNimble.BindingRedirectDoctor
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
         /// </summary>
-        protected override void Initialize()
+        protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
-            _dte = GetService(typeof(DTE)) as DTE2;
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            _dte = await GetServiceAsync(typeof(DTE)) as DTE2;
             Assumes.Present(_dte);
             Instance = this;
 
             Logger.Initialize(this, "BindingRedirects Doctor");
 
-            _commandService = (OleMenuCommandService)GetService(typeof(IMenuCommandService));
+            _commandService = await GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
             Assumes.Present(_commandService);
-            AddCommand(0x0100, (s, e) => { System.Threading.Tasks.Task.Run(() => FixBindingRedirects()); }, CheckFixCommandVisibility);
+            AddCommand(0x0100, (s, e) => { _ = System.Threading.Tasks.Task.Run(() => FixBindingRedirects()); }, CheckFixCommandVisibility);
         }
 
         #endregion
