@@ -7,6 +7,7 @@
 using EnvDTE;
 using EnvDTE80;
 using Microsoft;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System;
@@ -43,8 +44,14 @@ namespace CloudNimble.BindingRedirectDoctor
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    //[ProvideAutoLoad(UIContextGuids80.SolutionExists)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExistsAndFullyLoaded_string, PackageAutoLoadFlags.BackgroundLoad)]
     [Guid(PackageGuids.guidFixRedirectsCommandPackageString)]
+    [ProvideAutoLoad(PackageGuids.guidUIContextString, PackageAutoLoadFlags.BackgroundLoad)]
+    [ProvideUIContextRule(PackageGuids.guidUIContextString,
+        name: "Test auto load",
+        expression: "DotConfig",
+        termNames: new[] { "DotConfig" },
+        termValues: new[] { "HierSingleSelectionName:.config$" })]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     public sealed class FixRedirectsCommandPackage : AsyncPackage
     {
@@ -78,7 +85,7 @@ namespace CloudNimble.BindingRedirectDoctor
 
             _commandService = await GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
             Assumes.Present(_commandService);
-            AddCommand(0x0100, (s, e) => { _ = System.Threading.Tasks.Task.Run(() => FixBindingRedirects()); }, CheckFixCommandVisibility);
+            AddCommand(0x0100, (s, e) => { _ = System.Threading.Tasks.Task.Run(() => FixBindingRedirects()); });
         }
 
         #endregion
@@ -89,37 +96,12 @@ namespace CloudNimble.BindingRedirectDoctor
         /// <param name="commandId"></param>
         /// <param name="invokeHandler"></param>
         /// <param name="beforeQueryStatus"></param>
-        private void AddCommand(int commandId, EventHandler invokeHandler, EventHandler beforeQueryStatus)
+        private void AddCommand(int commandId, EventHandler invokeHandler)
         {
             var cmdId = new CommandID(PackageGuids.guidFixRedirectsCommandPackageCmdSet, commandId);
             var menuCmd = new OleMenuCommand(invokeHandler, cmdId);
-            menuCmd.BeforeQueryStatus += beforeQueryStatus;
+            //menuCmd.BeforeQueryStatus += beforeQueryStatus;
             _commandService.AddCommand(menuCmd);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        private void CheckFixCommandVisibility(object sender, EventArgs e)
-        {
-            ThreadHelper.ThrowIfNotOnUIThread();
-            OleMenuCommand button = (OleMenuCommand)sender;
-            button.Visible = button.Enabled = false;
-
-            if (_dte.SelectedItems.Count != 1)
-                return;
-
-            var paths = ProjectHelpers.GetSelectedItemPaths();
-
-            var isWebConfig = paths.Any(c => c.ToLower().EndsWith("web.config") || c.ToLower().EndsWith("app.config"));
-            button.Visible = button.Enabled = isWebConfig;
-
-            if (button.Visible && _isProcessing)
-            {
-                button.Enabled = false;
-                button.Text += " (running)";
-            }
         }
 
         /// <summary>

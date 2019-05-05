@@ -74,9 +74,15 @@
     </Bitmaps>
   </Commands>
 
+  <VisibilityConstraints>
+    <VisibilityItem guid="guidFixRedirectsCommandPackageCmdSet" id="FixRedirectsCommandId" context="guidUIContext"/>
+  </VisibilityConstraints>
+  
   <Symbols>
     <!-- This is the package guid. -->
     <GuidSymbol name="guidFixRedirectsCommandPackage" value="{402b69c6-e132-417a-a347-22bea9368042}" />
+
+    <GuidSymbol name="guidUIContext" value="{F3CD4159-CC79-445B-BD4C-8BF9E0C589BB}" />
 
     <!-- This is the guid used to group the menu commands together -->
     <GuidSymbol name="guidFixRedirectsCommandPackageCmdSet" value="{32d54385-5980-4bbb-8399-102a06ddb174}">
