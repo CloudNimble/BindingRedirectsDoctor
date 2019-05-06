@@ -85,7 +85,9 @@ namespace CloudNimble.BindingRedirectDoctor
 
             _commandService = await GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
             Assumes.Present(_commandService);
-            AddCommand(0x0100, (s, e) => { _ = System.Threading.Tasks.Task.Run(() => FixBindingRedirects()); });
+            AddCommand(0x0100, (s, e) => {
+                ThreadHelper.JoinableTaskFactory.RunAsync(() => FixBindingRedirects());
+            });
         }
 
         #endregion
@@ -100,16 +102,15 @@ namespace CloudNimble.BindingRedirectDoctor
         {
             var cmdId = new CommandID(PackageGuids.guidFixRedirectsCommandPackageCmdSet, commandId);
             var menuCmd = new OleMenuCommand(invokeHandler, cmdId);
-            //menuCmd.BeforeQueryStatus += beforeQueryStatus;
             _commandService.AddCommand(menuCmd);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        private void FixBindingRedirects()
+        private async Task FixBindingRedirects()
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             _isProcessing = true;
 
             var files = ProjectHelpers.GetSelectedItemPaths().Where(c => c.ToLower().EndsWith("web.config") || c.ToLower().EndsWith("app.config"));
@@ -134,19 +135,17 @@ namespace CloudNimble.BindingRedirectDoctor
                 string text = count == 1 ? " file" : " files";
                 _dte.StatusBar.Progress(true, $"Fixing {count} config {text}...", AmountCompleted: 1, Total: count + 1);
 
-                Parallel.For(0, count, options, i =>
+                foreach (var file in files)
                 {
-                    Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
                     var assemblyBindings = new XElement(assemblyBindingNs + "assemblyBinding");
                     var newBindings = new SortedDictionary<string, XElement>();
-                    var fullPath = files.ElementAt(i);
 
                     //RWM: Start by backing up the files.
-                    File.Copy(fullPath, fullPath + ".bak", true);
-                    Logger.Log($"Backup created for {fullPath}.");
+                    File.Copy(file, file + ".bak", true);
+                    Logger.Log($"Backup created for {file}.");
 
                     //RWM: Load the files.
-                    var config = XDocument.Load(fullPath);
+                    var config = XDocument.Load(file);
 
                     var oldBindingRoot = config.Root.Descendants().FirstOrDefault(c => c.Name.LocalName == "assemblyBinding");
                     var oldCount = oldBindingRoot.Elements().Count();
@@ -180,7 +179,7 @@ namespace CloudNimble.BindingRedirectDoctor
                         }
                     }
 
-                    //RWM: Add the SortedDictionary items to our new assemblyBindingd element.
+                    //RWM: Add the SortedDictionary items to our new assemblyBinding element.
                     foreach (var binding in newBindings)
                     {
                         assemblyBindings.Add(binding.Value);
@@ -191,14 +190,11 @@ namespace CloudNimble.BindingRedirectDoctor
                     oldBindingRoot.Remove();
 
                     //RWM: Save the config file.
-                    if (_dte.SourceControl.IsItemUnderSCC(fullPath) && !_dte.SourceControl.IsItemCheckedOut(fullPath))
-                    {
-                        _dte.SourceControl.CheckOutItem(fullPath);
-                    }
-                    config.Save(fullPath);
+                    ProjectHelpers.CheckFileOutOfSourceControl(file);
+                    config.Save(file);
 
                     Logger.Log($"Update complete. Result: {oldCount} bindings before, {newBindings.Count} after.");
-                });
+                }
             }
             catch (AggregateException agEx)
             {
