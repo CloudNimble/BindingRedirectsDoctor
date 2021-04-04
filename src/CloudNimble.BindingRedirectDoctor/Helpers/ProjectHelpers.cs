@@ -1,6 +1,7 @@
 ﻿using CloudNimble.BindingRedirectDoctor;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +16,7 @@ namespace CloudNimble
 
         public static void CheckFileOutOfSourceControl(string file)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (!File.Exists(file) || _dte.Solution.FindProjectItem(file) == null)
                 return;
 
@@ -29,6 +31,7 @@ namespace CloudNimble
 
         public static IEnumerable<ProjectItem> GetSelectedItems()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var items = (Array)_dte.ToolWindows.SolutionExplorer.SelectedItems;
 
             foreach (UIHierarchyItem selItem in items)
@@ -41,6 +44,7 @@ namespace CloudNimble
 
         public static IEnumerable<string> GetSelectedItemPaths()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             foreach (ProjectItem item in GetSelectedItems())
             {
                 if (item != null && item.Properties != null)
@@ -60,6 +64,7 @@ namespace CloudNimble
 
         public static string GetRootFolder(this Project project)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (string.IsNullOrEmpty(project?.FullName))
                 return null;
 
@@ -97,6 +102,7 @@ namespace CloudNimble
 
         public static void AddFileToProject(this Project project, string file, string itemType = null)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (project.IsKind(ProjectTypes.ASPNET_5, ProjectTypes.DOTNET_Core, ProjectTypes.SSDT))
                 return;
 
@@ -122,6 +128,7 @@ namespace CloudNimble
 
         public static void AddNestedFile(string parentFile, string newFile, bool force = false)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             ProjectItem item = _dte.Solution.FindProjectItem(parentFile);
 
             try
@@ -148,6 +155,7 @@ namespace CloudNimble
 
         public static bool IsKind(this Project project, params string[] kindGuids)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             foreach (var guid in kindGuids)
             {
                 if (project.Kind.Equals(guid, StringComparison.OrdinalIgnoreCase))
@@ -159,15 +167,17 @@ namespace CloudNimble
 
         public static IEnumerable<Project> GetAllProjects()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return _dte.Solution.Projects
                   .Cast<Project>()
                   .SelectMany(GetChildProjects)
                   .Union(_dte.Solution.Projects.Cast<Project>())
-                  .Where(p => { try { return !string.IsNullOrEmpty(p.FullName); } catch { return false; } });
+                  .Where(p => { ThreadHelper.ThrowIfNotOnUIThread(); try { return !string.IsNullOrEmpty(p.FullName); } catch { return false; } });
         }
 
         private static IEnumerable<Project> GetChildProjects(Project parent)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             try
             {
                 //if (parent.Kind != ProjectKinds.vsProjectKindSolutionFolder && parent.Collection == null)  // Unloaded
@@ -197,6 +207,7 @@ namespace CloudNimble
 
         public static Project GetActiveProject()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             try
             {
                 if (_dte.ActiveSolutionProjects is Array activeSolutionProjects && activeSolutionProjects.Length > 0)
@@ -212,6 +223,7 @@ namespace CloudNimble
 
         public static bool DeleteFileFromProject(string file)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             ProjectItem item = _dte.Solution.FindProjectItem(file);
 
             if (item == null)

@@ -86,7 +86,7 @@ namespace CloudNimble.BindingRedirectDoctor
             _commandService = await GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
             Assumes.Present(_commandService);
             AddCommand(0x0100, (s, e) => {
-                ThreadHelper.JoinableTaskFactory.RunAsync(() => FixBindingRedirects());
+                ThreadHelper.JoinableTaskFactory.RunAsync(() => FixBindingRedirectsAsync());
             });
         }
 
@@ -108,7 +108,7 @@ namespace CloudNimble.BindingRedirectDoctor
         /// <summary>
         /// 
         /// </summary>
-        private async Task FixBindingRedirects()
+        private async Task FixBindingRedirectsAsync()
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             _isProcessing = true;
