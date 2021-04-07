@@ -42,7 +42,7 @@ namespace CloudNimble.BindingRedirectDoctor
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
+    [InstalledProductRegistration("#110", "#112", "1.1", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExistsAndFullyLoaded_string, PackageAutoLoadFlags.BackgroundLoad)]
     [Guid(PackageGuids.guidFixRedirectsCommandPackageString)]
@@ -159,7 +159,13 @@ namespace CloudNimble.BindingRedirectDoctor
                         {
                             Logger.Log($"Reference already exists for {assemblyIdentity.Attribute("name").Value}. Checking version...");
                             //RWM: We've seen this assembly before. Check to see if we can update the version.
-                            var newBindingRedirect = newBindings[assemblyIdentity.Attribute("name").Value].Descendants(assemblyBindingNs + "bindingRedirect").First();
+                            var newBindingRedirect = newBindings[assemblyIdentity.Attribute("name").Value].Descendants(assemblyBindingNs + "bindingRedirect").FirstOrDefault();
+                            if (newBindingRedirect == null)
+                            {
+                                Logger.Log($"The bindingRedirect tag for {assemblyIdentity.Attribute("name").Value} was not found. Skipping.");
+                                continue;
+                            }
+
                             var oldVersion = Version.Parse(newBindingRedirect.Attribute("newVersion").Value);
                             var newVersion = Version.Parse(bindingRedirect.Attribute("newVersion").Value);
 
