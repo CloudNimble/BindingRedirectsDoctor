@@ -20,3 +20,7 @@ on the official Visual Studio extension gallery.
   - [x] Sorts the list for easy manageability.
   - [x] Removes duplicates, using the latest version for each duplicate redirect found.
   - [x] Makes a backup of your original file (just in case).
+
+## 1.2
+
+- [x] Works in Visual Studio 2019 AND Visual Studio 2022.
